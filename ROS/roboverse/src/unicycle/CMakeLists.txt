@@ -21,6 +21,9 @@ add_executable(kinematics_controller src/KinematicsController.cpp)
 # Task Manager Executable
 add_executable(task_manager src/TaskManager.cpp)
 
+# Rendez-vous Manager Executable
+add_executable(rendezvous_manager src/RendezvousManager.cpp)
+
 ## AMENT TARGET DEPENDENCIES
 # Kinematics Controller Target Dependencies
 ament_target_dependencies(
@@ -37,6 +40,14 @@ ament_target_dependencies(
   std_msgs
 )
 
+# Rendez-vous Manager Target Dependencies
+ament_target_dependencies (
+  rendezvous_manager
+  rclcpp
+  geometry_msgs
+  std_msgs
+)
+
 ## INSTALL TARGETS
 # Kinematics Controller Install Targets
 install(TARGETS kinematics_controller
@@ -45,6 +56,11 @@ install(TARGETS kinematics_controller
 
 # Task Manager Install Targets
 install(TARGETS task_manager
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Rendez-vous Manager Install Targets
+install(TARGETS rendezvous_manager
   DESTINATION lib/${PROJECT_NAME}
 )
 

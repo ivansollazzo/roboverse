@@ -17,14 +17,19 @@ KinematicsController::KinematicsController(const rclcpp::NodeOptions &options)
     // Get the unicycle's identifier. If not set, default to "unicycle_0"
     unicycle_id_ = this->declare_parameter<std::string>("unicycle_id", "unicycle_0");
 
-    // Create a QoS profile with defaults settings for the publisher
-    auto qos = rclcpp::SystemDefaultsQoS();
+    // Create a QoS profile with custom settings for all nodes except current_pose
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
+    .reliable()
+    .transient_local();
+
+    // Create a QoS profile with default settings for current_pose
+    auto unity_qos = rclcpp::SystemDefaultsQoS();
 
     // Initialize publisher for control commands
-    ctrl_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>(unicycle_id_ + "/dynamics/ctrl", qos);
+    ctrl_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>(unicycle_id_ + "/dynamics/ctrl", unity_qos);
 
     // Initialize subscriber for current pose
-    current_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(unicycle_id_ + "/dynamics/current_pose", qos, std::bind(&KinematicsController::current_pose_callback, this, std::placeholders::_1));
+    current_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(unicycle_id_ + "/dynamics/current_pose", unity_qos, std::bind(&KinematicsController::current_pose_callback, this, std::placeholders::_1));
 
     // Initialize publisher for target reached
     target_reached_publisher_ = this->create_publisher<std_msgs::msg::Bool>(unicycle_id_ + "/dynamics/target_reached", qos);

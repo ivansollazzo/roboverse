@@ -77,6 +77,17 @@ def generate_launch_description():
             ],
             output='screen'
         ),
+        # Rendez-vous Manager
+        Node(
+            package='unicycle',
+            executable='rendezvous_manager',
+            name='unicycle_0_rendezvous_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_0'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 0}
+            ]
+        ),
 
         ## UNICYCLE 1 NODES
         # Kinematics Controller
@@ -104,6 +115,17 @@ def generate_launch_description():
                 {'rv_desired_place_z': rv_places['desired_place_1']['z']},
                 {'rv_desired_place_x': rv_places['desired_place_1']['x']}
             ],
+        ),
+        # Rendez-vous Manager
+        Node(
+            package='unicycle',
+            executable='rendezvous_manager',
+            name='unicycle_1_rendezvous_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_1'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 1}
+            ]
         ),
 
         ## UNICYCLE 2 NODES
@@ -133,6 +155,17 @@ def generate_launch_description():
                 {'rv_desired_place_x': rv_places['desired_place_2']['x']}
             ],
             output='screen'
+        ),
+        # Rendez-vous Manager
+        Node(
+            package='unicycle',
+            executable='rendezvous_manager',
+            name='unicycle_2_rendezvous_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_2'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 2}
+            ]
         )
 
     ])

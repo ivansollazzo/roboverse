@@ -16,8 +16,13 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     // Get the unicycle's identifier. If not set, default to "unicycle_0"
     unicycle_id_ = this->declare_parameter<std::string>("unicycle_id", "unicycle_0");
 
-    // Create a QoS profile with defaults settings for the publisher
-    auto qos = rclcpp::SystemDefaultsQoS();
+    // Create a QoS profile with custom settings for all nodes except current_pose
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
+    .reliable()
+    .transient_local();
+
+    // Create a QoS profile with default settings for current_pose
+    auto unity_qos = rclcpp::SystemDefaultsQoS();
 
     // Initialize publisher for target pose
     target_pose_pub_ = this->create_publisher<geometry_msgs::msg::Pose>(unicycle_id_ + "/dynamics/target_pose", qos);
@@ -29,7 +34,7 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     rendezvous_status_sub_ = this->create_subscription<std_msgs::msg::Bool>(unicycle_id_ + "/rendezvous/complete", qos, std::bind(&TaskManager::rendezvous_status_callback, this, std::placeholders::_1));
 
     // Initialize subscriber for Unity simulation status
-    unity_simulation_status_sub_ = this->create_subscription<std_msgs::msg::Bool>("simulation/ready", qos, std::bind(&TaskManager::unity_simulation_status_callback, this, std::placeholders::_1));
+    unity_simulation_status_sub_ = this->create_subscription<std_msgs::msg::Bool>("simulation/ready", unity_qos, std::bind(&TaskManager::unity_simulation_status_callback, this, std::placeholders::_1));
 
     // Initialize publisher for rendez-vous desired pose
     rendezvous_desired_pose_pub_ = this->create_publisher<geometry_msgs::msg::Pose>(unicycle_id_ + "/rendezvous/desired_pose", qos);
@@ -38,35 +43,36 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     fsm_timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&TaskManager::fsm, this));
 
     // Variable to set the current target place according to unicycle id
-    current_target_place_ = (unicycle_id_ == "unicycle_1") ? 1 : (unicycle_id_ == "unicycle_2") ? 2 : 0;
+    current_target_place_ = (unicycle_id_ == "unicycle_1") ? 1 : (unicycle_id_ == "unicycle_2") ? 2
+                                                                                                : 0;
 
     // Load places data
     load_places_data();
-
 }
 
 // Method to call the FSM
 void TaskManager::fsm()
 {
-    switch (current_state_) {
-        case FSM::IDLE:
-            handle_idle_state();
-            break;
-        case FSM::GOING_TO_TARGET:
-            handle_going_to_target_state();
-            break;
-        case FSM::COLLECTING_DATA:
-            handle_collecting_data_state();
-            break;
-        case FSM::WAITING_FOR_RV:
-            handle_waiting_for_rv_state();
-            break;
-        case FSM::EXCHANGING_DATA:
-            handle_exchanging_data_state();
-            break;
-        case FSM::FINALIZING:
-            handle_finalizing_state();
-            break;
+    switch (current_state_)
+    {
+    case FSM::IDLE:
+        handle_idle_state();
+        break;
+    case FSM::GOING_TO_TARGET:
+        handle_going_to_target_state();
+        break;
+    case FSM::COLLECTING_DATA:
+        handle_collecting_data_state();
+        break;
+    case FSM::WAITING_FOR_RV:
+        handle_waiting_for_rv_state();
+        break;
+    case FSM::EXCHANGING_DATA:
+        handle_exchanging_data_state();
+        break;
+    case FSM::FINALIZING:
+        handle_finalizing_state();
+        break;
     }
 }
 
@@ -113,31 +119,74 @@ void TaskManager::handle_going_to_target_state()
     if (target_reached_)
     {
         // Transition to the COLLECTING_DATA state
-        transition_to_state(FSM::IDLE);
+        transition_to_state(FSM::COLLECTING_DATA);
     }
 }
 
 void TaskManager::handle_collecting_data_state()
 {
-    return;
+    // Collect data from the environment
+
+    // Publish the desired pose for rendez-vous
+    rendezvous_desired_pose_pub_->publish(*rendezvous_desired_place_);
+
+    // Transition to the WAITING_FOR_RV state
+    transition_to_state(FSM::WAITING_FOR_RV);
 }
 
 // Function to handle the WAITING_FOR_RV state
 void TaskManager::handle_waiting_for_rv_state()
 {
-    return;
+    if (!rendezvous_complete_)
+    {
+        // If rendez-vous is not complete, wait
+        return;
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Rendez-vous complete. Exchanging data...");
+
+    // Transition to the EXCHANGING_DATA state
+    transition_to_state(FSM::EXCHANGING_DATA);
 }
 
 // Function to handle the EXCHANGING_DATA state
 void TaskManager::handle_exchanging_data_state()
 {
-    return;
+    // Exchange data with other unicycles
+
+    // Switch to the FINALIZING state
+    transition_to_state(FSM::FINALIZING);
 }
 
 // Function to handle the FINALIZING state
 void TaskManager::handle_finalizing_state()
 {
-    return;
+    // Cleaning variables
+    target_reached_ = false;
+    rendezvous_complete_ = false;
+
+    // Switch points
+
+    // Publish the target pose based on the current target place
+    switch (current_target_place_)
+    {
+    case 0:
+        target_pose_pub_->publish(*target_place_0_);
+        break;
+    case 1:
+        target_pose_pub_->publish(*target_place_1_);
+        break;
+    case 2:
+        target_pose_pub_->publish(*target_place_2_);
+        break;
+    default:
+        RCLCPP_WARN(this->get_logger(), "Unknown target place");
+        break;
+    }
+
+    // Transition to the GOING_TO_TARGET state
+    transition_to_state(FSM::GOING_TO_TARGET);
+
 }
 
 // Callback to handle target reached
@@ -152,8 +201,9 @@ void TaskManager::rendezvous_status_callback(const std_msgs::msg::Bool::SharedPt
     rendezvous_complete_ = msg->data;
 }
 
-void TaskManager::load_places_data() {
-    
+void TaskManager::load_places_data()
+{
+
     // Instantiate places objects
     target_place_0_ = std::make_shared<geometry_msgs::msg::Pose>();
     target_place_1_ = std::make_shared<geometry_msgs::msg::Pose>();
@@ -182,7 +232,6 @@ void TaskManager::load_places_data() {
                 target_place_2_->position.z, target_place_2_->position.x);
     RCLCPP_INFO(this->get_logger(), "Rendez-vous desired place: [%.2f, %.2f]",
                 rendezvous_desired_place_->position.x, rendezvous_desired_place_->position.x);
-
 }
 
 void TaskManager::unity_simulation_status_callback(const std_msgs::msg::Bool::SharedPtr msg)
