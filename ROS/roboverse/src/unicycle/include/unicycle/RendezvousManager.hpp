@@ -30,11 +30,20 @@ class RendezvousManager : public rclcpp::Node
         // Unicycle number
         int unicycle_number_;
 
+        // Variable to store the number of unicycles
+        int num_unicycles_;
+
         // Boolean array to track desired unicycles pose
         std::vector<bool> desired_poses_received_;
 
+        // Array of poses to store current unicycles pose
+        std::vector<geometry_msgs::msg::Pose::SharedPtr> current_poses_;
+
         // Subscriptions array according to number of unicycle
         std::vector<rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> desired_poses_subs_;
+
+        // Subscriptions array to track all unicycles pose
+        std::vector<rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> current_poses_subs_;
 
         // Publisher for rendez-vous point
         rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr target_pose_pub_;
@@ -50,6 +59,9 @@ class RendezvousManager : public rclcpp::Node
 
         // Callback to check if target is reached
         void target_reached_callback(const std_msgs::msg::Bool::SharedPtr msg);
+
+        // Callback to track current unicycles pose. We use a single callback and use the unicycle ID to differentiate between them.
+        void current_pose_received_callback(const geometry_msgs::msg::Pose::SharedPtr msg, const int unicycle_id);
 
         // Defining the FSM (Finite State Machine) in order to control the task manager
         enum class FSM
@@ -85,6 +97,15 @@ class RendezvousManager : public rclcpp::Node
 
         // Array to hold the desired poses
         std::vector<geometry_msgs::msg::Pose::SharedPtr> desired_poses_;
+
+        // Parameters to configure the rendezvous behavior
+        const double rendezvous_error_update_factor_ = 0.25;
+        const double rendezvous_error_threshold_ = 1.5;
+
+        // Variables to store the rendez-vous errors
+        double rendezvous_error_x_ = 0.0;
+        double rendezvous_error_z_ = 0.0;
+
 };
 
 #endif // RENDEZVOUS_MANAGER_HPP

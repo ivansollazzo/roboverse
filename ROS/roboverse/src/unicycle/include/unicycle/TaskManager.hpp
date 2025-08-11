@@ -12,6 +12,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <vector>
 
 class TaskManager : public rclcpp::Node
 {
@@ -23,6 +24,12 @@ private:
 
     // Unicycle's identifier
     std::string unicycle_id_;
+
+    // Unicycle's number
+    int unicycle_number_;
+
+    // Number of unicycles
+    int num_unicycles_;
 
     // Publisher for target pose
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr target_pose_pub_;
@@ -70,9 +77,6 @@ private:
     // Callback for target reached
     void target_reached_callback(const std_msgs::msg::Bool::SharedPtr msg);
 
-    // Callback for rendez-vous status
-    void rendezvous_status_callback(const std_msgs::msg::Bool::SharedPtr msg);
-
     // Callback for Unity simulation status
     void unity_simulation_status_callback(const std_msgs::msg::Bool::SharedPtr msg);
 
@@ -95,6 +99,15 @@ private:
     bool target_reached_ = false;
     bool rendezvous_complete_ = false;
     bool unity_simulation_ready_ = false;
+
+    // Subscription array to track rendezvous status
+    std::vector<bool> all_rendezvous_complete_;
+
+    // Subscriptions array to track all rendezvous status
+    std::vector<rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr> rendezvous_status_subs_;
+
+    // Callback for rendezvous status according to the unicycle number
+    void rendezvous_status_callback(const std_msgs::msg::Bool::SharedPtr msg, int unicycle_number);
 
 };
 

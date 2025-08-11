@@ -66,6 +66,8 @@ def generate_launch_description():
             name='unicycle_0_task_manager',
             parameters=[
                 {'unicycle_id': 'unicycle_0'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 0},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
@@ -106,6 +108,8 @@ def generate_launch_description():
             name='unicycle_1_task_manager',
             parameters=[
                 {'unicycle_id': 'unicycle_1'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 1},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
@@ -145,6 +149,8 @@ def generate_launch_description():
             name='unicycle_2_task_manager',
             parameters=[
                 {'unicycle_id': 'unicycle_2'},
+                {'num_unicycles': 3},
+                {'unicycle_number': 2},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
