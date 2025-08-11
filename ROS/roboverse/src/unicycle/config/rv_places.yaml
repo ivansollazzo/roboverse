@@ -1,0 +1,12 @@
+# Desired Rendez-vous poses
+desired_place_0:
+  z: 6.0
+  x: 28.0
+
+desired_place_1:
+  z: 3.0
+  x: 27.0
+
+desired_place_2:
+  z: 5.0
+  x: 24.0

@@ -18,6 +18,9 @@ include_directories(include)
 # Kinematics Controller Executable
 add_executable(kinematics_controller src/KinematicsController.cpp)
 
+# Task Manager Executable
+add_executable(task_manager src/TaskManager.cpp)
+
 ## AMENT TARGET DEPENDENCIES
 # Kinematics Controller Target Dependencies
 ament_target_dependencies(
@@ -26,9 +29,22 @@ ament_target_dependencies(
   geometry_msgs
 )
 
+# Task Manager Target Dependencies
+ament_target_dependencies(
+  task_manager
+  rclcpp
+  geometry_msgs
+  std_msgs
+)
+
 ## INSTALL TARGETS
 # Kinematics Controller Install Targets
 install(TARGETS kinematics_controller
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Task Manager Install Targets
+install(TARGETS task_manager
   DESTINATION lib/${PROJECT_NAME}
 )
 

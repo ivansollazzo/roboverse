@@ -26,6 +26,9 @@ KinematicsController::KinematicsController(const rclcpp::NodeOptions &options)
     // Initialize subscriber for current pose
     current_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(unicycle_id_ + "/dynamics/current_pose", qos, std::bind(&KinematicsController::current_pose_callback, this, std::placeholders::_1));
 
+    // Initialize publisher for target reached
+    target_reached_publisher_ = this->create_publisher<std_msgs::msg::Bool>(unicycle_id_ + "/dynamics/target_reached", qos);
+
     // Initialize subscriber for target pose
     target_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(unicycle_id_ + "/dynamics/target_pose", qos, std::bind(&KinematicsController::target_pose_callback, this, std::placeholders::_1));
 
@@ -114,6 +117,13 @@ void KinematicsController::handle_idle_state()
     if (valid_target_)
     {
         RCLCPP_INFO(this->get_logger(), "Valid target pose received -> Z: %f, X: %f, Orientation: %f", target_pose_->position.z, target_pose_->position.x, target_pose_->orientation.y);
+
+        // Publish target reached
+        auto target_reached_msg = std::make_shared<std_msgs::msg::Bool>();
+        target_reached_msg->data = false;
+
+        target_reached_publisher_->publish(*target_reached_msg);
+
         transition_to_state(FSM::ROTATING);
     }
 }
@@ -168,6 +178,12 @@ void KinematicsController::handle_translating_state()
 
         // Log the updated current pose
         RCLCPP_INFO(this->get_logger(), "Current pose updated to target pose -> Z: %f, X: %f, Orientation: %f", current_pose_->position.z, current_pose_->position.x, current_pose_->orientation.y);
+
+        // Publish target reached
+        auto target_reached_msg = std::make_shared<std_msgs::msg::Bool>();
+        target_reached_msg->data = true;
+
+        target_reached_publisher_->publish(*target_reached_msg);
 
         // Switch to idle state
         transition_to_state(FSM::IDLE);

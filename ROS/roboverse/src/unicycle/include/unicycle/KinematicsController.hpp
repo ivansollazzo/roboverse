@@ -12,6 +12,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/pose.hpp>
+#include <std_msgs/msg/bool.hpp>
 
 // Kinematics controller class
 class KinematicsController : public rclcpp::Node
@@ -26,6 +27,9 @@ private:
     
     // Publisher for controller commands
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr ctrl_publisher_;
+
+    // Publisher for target reached status
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr target_reached_publisher_;
     
     // Subscriber for current pose
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr current_pose_subscriber_;
@@ -42,7 +46,7 @@ private:
     };
     
     // Variable to hold the current state of the FSM
-    FSM current_state_;
+    FSM current_state_ = FSM::IDLE;
     
     // Defining some methods to handle the FSM states
     void handle_idle_state();
