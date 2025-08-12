@@ -34,6 +34,9 @@ private:
     // Number of unicycles
     int num_unicycles_;
 
+    // Number of places
+    int num_places_;
+
     // Vector of clients for knowledge saving
     std::vector<rclcpp::Client<unicycle::srv::UpdateKnowledge>::SharedPtr> knowledge_clients_;
 
@@ -69,6 +72,7 @@ private:
         COLLECTING_DATA,
         WAITING_FOR_RV,
         EXCHANGING_DATA,
+        CHOOSING_NEXT_PLACE,
         FINALIZING
     };
 
@@ -81,6 +85,7 @@ private:
     void handle_collecting_data_state();
     void handle_waiting_for_rv_state();
     void handle_exchanging_data_state();
+    void handle_choosing_next_place_state();
     void handle_finalizing_state();
 
     // Method to call the FSM

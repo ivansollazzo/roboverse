@@ -22,6 +22,9 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     // Get the number of unicycles
     num_unicycles_ = this->declare_parameter<int>("num_unicycles", 1);
 
+    // Get the number of places
+    num_places_ = this->declare_parameter<int>("num_places", 1);
+
     // Create a QoS profile with custom settings for all nodes except current_pose
     auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
                    .reliable()
@@ -64,9 +67,7 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     fsm_timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&TaskManager::fsm, this));
 
     // Variable to set the current target place according to unicycle id
-    current_target_place_ = (unicycle_id_ == "unicycle_1")   ? 1
-                            : (unicycle_id_ == "unicycle_2") ? 2
-                                                             : 0;
+    current_target_place_ = this->declare_parameter<int>("current_target_place", 0);
 
     // Load places data
     load_places_data();
@@ -111,6 +112,9 @@ void TaskManager::fsm()
         break;
     case FSM::EXCHANGING_DATA:
         handle_exchanging_data_state();
+        break;
+    case FSM::CHOOSING_NEXT_PLACE:
+        handle_choosing_next_place_state();
         break;
     case FSM::FINALIZING:
         handle_finalizing_state();
@@ -223,6 +227,24 @@ void TaskManager::handle_exchanging_data_state()
     }
 
     // Switch to the FINALIZING state
+    transition_to_state(FSM::CHOOSING_NEXT_PLACE);
+}
+
+// Function to handle the CHOOSING_NEXT_PLACE state
+void TaskManager::handle_choosing_next_place_state()
+{
+    // Choosing the next target place
+    if (current_target_place_ < num_places_ - 1)
+    {
+        current_target_place_++;
+    }
+    else {
+        current_target_place_ = 0;
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Next target place is: %d", current_target_place_);
+
+    // Transition to finalizing state
     transition_to_state(FSM::FINALIZING);
 }
 
@@ -231,11 +253,10 @@ void TaskManager::handle_finalizing_state()
 {
     // Cleaning variables
     target_reached_ = false;
+    rendezvous_complete_ = false;
 
     // Reset the rendezvous complete flags
     std::fill(all_rendezvous_complete_.begin(), all_rendezvous_complete_.end(), false);
-
-    // Switch points
 
     // Publish the target pose based on the current target place
     switch (current_target_place_)

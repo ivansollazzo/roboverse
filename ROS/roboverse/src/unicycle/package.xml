@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>unicycle</name>
-  <version>1.0.2508120337</version>
+  <version>1.0.0</version>
   <description>This is the unicycle implementation for Roboverse System.</description>
   <maintainer email="ivan.sollazzo1998@gmail.com">Ivan Sollazzo</maintainer>
   <license>GPL-3.0</license>

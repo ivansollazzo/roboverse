@@ -68,6 +68,7 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_0'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 0},
+                {'num_places': 3},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
@@ -75,7 +76,8 @@ def generate_launch_description():
                 {'target_place_2_z': target_places['target_place_2']['z']},
                 {'target_place_2_x': target_places['target_place_2']['x']},
                 {'rv_desired_place_z': rv_places['desired_place_0']['z']},
-                {'rv_desired_place_x': rv_places['desired_place_0']['x']}
+                {'rv_desired_place_x': rv_places['desired_place_0']['x']},
+                {'current_target_place': 0}
             ],
             output='screen'
         ),
@@ -88,7 +90,8 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_0'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 0}
-            ]
+            ],
+            output='screen'
         ),
         # Knowledge Register
         Node(
@@ -97,7 +100,8 @@ def generate_launch_description():
             name='unicycle_0_knowledge_register',
             parameters=[
                 {'unicycle_id': 'unicycle_0'}
-            ]
+            ],
+            output='screen'
         ),
         # Sensors Manager
         Node(
@@ -129,6 +133,7 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_1'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 1},
+                {'num_places': 3},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
@@ -136,8 +141,10 @@ def generate_launch_description():
                 {'target_place_2_z': target_places['target_place_2']['z']},
                 {'target_place_2_x': target_places['target_place_2']['x']},
                 {'rv_desired_place_z': rv_places['desired_place_1']['z']},
-                {'rv_desired_place_x': rv_places['desired_place_1']['x']}
+                {'rv_desired_place_x': rv_places['desired_place_1']['x']},
+                {'current_target_place': 1}
             ],
+            output='screen'
         ),
         # Rendez-vous Manager
         Node(
@@ -148,7 +155,8 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_1'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 1}
-            ]
+            ],
+            output='screen'
         ),
         # Knowledge Register
         Node(
@@ -157,7 +165,8 @@ def generate_launch_description():
             name='unicycle_1_knowledge_register',
             parameters=[
                 {'unicycle_id': 'unicycle_1'}
-            ]
+            ],
+            output='screen'
         ),
         # Sensors Manager
         Node(
@@ -167,7 +176,8 @@ def generate_launch_description():
             parameters=[
                 {'unicycle_id': 'unicycle_1'},
                 {'unicycle_number': 1}
-            ]
+            ],
+            output='screen'
         ),
 
         ## UNICYCLE 2 NODES
@@ -189,6 +199,7 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_2'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 2},
+                {'num_places': 3},
                 {'target_place_0_z': target_places['target_place_0']['z']},
                 {'target_place_0_x': target_places['target_place_0']['x']},
                 {'target_place_1_z': target_places['target_place_1']['z']},
@@ -196,7 +207,8 @@ def generate_launch_description():
                 {'target_place_2_z': target_places['target_place_2']['z']},
                 {'target_place_2_x': target_places['target_place_2']['x']},
                 {'rv_desired_place_z': rv_places['desired_place_2']['z']},
-                {'rv_desired_place_x': rv_places['desired_place_2']['x']}
+                {'rv_desired_place_x': rv_places['desired_place_2']['x']},
+                {'current_target_place': 2}
             ],
             output='screen'
         ),
@@ -209,7 +221,8 @@ def generate_launch_description():
                 {'unicycle_id': 'unicycle_2'},
                 {'num_unicycles': 3},
                 {'unicycle_number': 2}
-            ]
+            ],
+            output='screen'
         ),
         # Knowledge Register
         Node(
@@ -218,7 +231,8 @@ def generate_launch_description():
             name='unicycle_2_knowledge_register',
             parameters=[
                 {'unicycle_id': 'unicycle_2'}
-            ]
+            ],
+            output='screen'
         ),
         # Sensors Manager
         Node(
@@ -228,7 +242,8 @@ def generate_launch_description():
             parameters=[
                 {'unicycle_id': 'unicycle_2'},
                 {'unicycle_number': 2}
-            ]
+            ],
+            output='screen'
         )
 
     ])
