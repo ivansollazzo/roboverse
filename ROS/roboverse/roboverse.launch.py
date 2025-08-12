@@ -90,6 +90,25 @@ def generate_launch_description():
                 {'unicycle_number': 0}
             ]
         ),
+        # Knowledge Register
+        Node(
+            package='unicycle',
+            executable='knowledge_register',
+            name='unicycle_0_knowledge_register',
+            parameters=[
+                {'unicycle_id': 'unicycle_0'}
+            ]
+        ),
+        # Sensors Manager
+        Node(
+            package='unicycle',
+            executable='sensors_manager',
+            name='unicycle_0_sensors_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_0'},
+                {'unicycle_number': 0}
+            ]
+        ),
 
         ## UNICYCLE 1 NODES
         # Kinematics Controller
@@ -128,6 +147,25 @@ def generate_launch_description():
             parameters=[
                 {'unicycle_id': 'unicycle_1'},
                 {'num_unicycles': 3},
+                {'unicycle_number': 1}
+            ]
+        ),
+        # Knowledge Register
+        Node(
+            package='unicycle',
+            executable='knowledge_register',
+            name='unicycle_1_knowledge_register',
+            parameters=[
+                {'unicycle_id': 'unicycle_1'}
+            ]
+        ),
+        # Sensors Manager
+        Node(
+            package='unicycle',
+            executable='sensors_manager',
+            name='unicycle_1_sensors_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_1'},
                 {'unicycle_number': 1}
             ]
         ),
@@ -170,6 +208,25 @@ def generate_launch_description():
             parameters=[
                 {'unicycle_id': 'unicycle_2'},
                 {'num_unicycles': 3},
+                {'unicycle_number': 2}
+            ]
+        ),
+        # Knowledge Register
+        Node(
+            package='unicycle',
+            executable='knowledge_register',
+            name='unicycle_2_knowledge_register',
+            parameters=[
+                {'unicycle_id': 'unicycle_2'}
+            ]
+        ),
+        # Sensors Manager
+        Node(
+            package='unicycle',
+            executable='sensors_manager',
+            name='unicycle_2_sensors_manager',
+            parameters=[
+                {'unicycle_id': 'unicycle_2'},
                 {'unicycle_number': 2}
             ]
         )
