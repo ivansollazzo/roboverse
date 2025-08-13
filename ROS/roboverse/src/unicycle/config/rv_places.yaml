@@ -1,12 +1,12 @@
 # Desired Rendez-vous poses
 desired_place_0:
   z: 5.0
-  x: 27.0
+  x: 42.8
 
 desired_place_1:
   z: 4.0
-  x: 28.5
+  x: 44.3
 
 desired_place_2:
   z: 6.0
-  x: 28.0
+  x: 44.3

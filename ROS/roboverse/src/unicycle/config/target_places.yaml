@@ -1,12 +1,12 @@
 # Target places
 target_place_0:
     z: 5.0
-    x: 21.0
+    x: 23.5
 
 target_place_1:
-    z: 2.0
-    x: 34.0
+    z: -17.0
+    x: 55.0
 
 target_place_2:
-    z: 10.0
-    x: 34.0
+    z: 21.0
+    x: 54.0

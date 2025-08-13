@@ -128,6 +128,7 @@ private:
     bool target_reached_ = false;
     bool rendezvous_complete_ = false;
     bool unity_simulation_ready_ = false;
+    bool rendezvous_failed_ = false;
 
     // Subscription array to track rendezvous status
     std::vector<bool> all_rendezvous_complete_;
@@ -154,6 +155,12 @@ private:
     // Variables to manage service requests
     bool service_request_sent_ = false;
     std::shared_future<std::shared_ptr<unicycle::srv::UpdateKnowledge::Response>> service_future_;
+
+    // Add a timer for rendez-vous timeout
+    rclcpp::TimerBase::SharedPtr rendezvous_timeout_timer_;
+
+    // Callback to manage rendez-vous timeout
+    void rendezvous_timeout_callback();
 
 };
 

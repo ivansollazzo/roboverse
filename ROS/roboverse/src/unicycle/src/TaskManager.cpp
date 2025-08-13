@@ -91,6 +91,10 @@ TaskManager::TaskManager(const rclcpp::NodeOptions &options)
     air_quality_sensor_sub_ = this->create_subscription<std_msgs::msg::Int32>(
         unicycle_id_ + "/sensors/air_quality", qos,
         std::bind(&TaskManager::air_quality_sensor_callback, this, std::placeholders::_1));
+
+    // Initialize a timer for rendez-vous timeout (disabled by default)
+    rendezvous_timeout_timer_ = this->create_wall_timer(std::chrono::seconds(90), std::bind(&TaskManager::rendezvous_timeout_callback, this));
+    rendezvous_timeout_timer_->cancel();
 }
 
 // Method to call the FSM
@@ -179,6 +183,9 @@ void TaskManager::handle_collecting_data_state()
     // Publish the desired pose for rendez-vous
     rendezvous_desired_pose_pub_->publish(*rendezvous_desired_place_);
 
+    // Start rendezvous timeout timer
+    rendezvous_timeout_timer_->reset();
+
     // Transition to the WAITING_FOR_RV state
     transition_to_state(FSM::WAITING_FOR_RV);
 }
@@ -208,7 +215,13 @@ void TaskManager::handle_waiting_for_rv_state()
     if (rendezvous_complete_)
     {
         RCLCPP_INFO(this->get_logger(), "Rendez-vous complete for all unicycles. Exchanging data...");
+        rendezvous_timeout_timer_->cancel();
         transition_to_state(FSM::EXCHANGING_DATA);
+    }
+    else if (rendezvous_failed_)
+    {
+        RCLCPP_WARN(this->get_logger(), "Rendez-vous failed for unicycle %d", unicycle_number_);
+        transition_to_state(FSM::CHOOSING_NEXT_PLACE);
     }
 }
 
@@ -238,7 +251,8 @@ void TaskManager::handle_choosing_next_place_state()
     {
         current_target_place_++;
     }
-    else {
+    else
+    {
         current_target_place_ = 0;
     }
 
@@ -254,6 +268,7 @@ void TaskManager::handle_finalizing_state()
     // Cleaning variables
     target_reached_ = false;
     rendezvous_complete_ = false;
+    rendezvous_failed_ = false;
 
     // Reset the rendezvous complete flags
     std::fill(all_rendezvous_complete_.begin(), all_rendezvous_complete_.end(), false);
@@ -333,50 +348,64 @@ void TaskManager::unity_simulation_status_callback(const std_msgs::msg::Bool::Sh
 // Function to manage save knowledge requests
 void TaskManager::make_knowledge_update_request(const int target_unicycle_id)
 {
-    if (target_unicycle_id < 0 || target_unicycle_id >= num_unicycles_) {
+    if (target_unicycle_id < 0 || target_unicycle_id >= num_unicycles_)
+    {
         RCLCPP_WARN(this->get_logger(), "Invalid target_unicycle_id: %d", target_unicycle_id);
         return;
     }
 
     auto client = knowledge_clients_[target_unicycle_id];
-    if (!client) {
+    if (!client)
+    {
         RCLCPP_WARN(this->get_logger(), "Knowledge client for unicycle %d is not initialized", target_unicycle_id);
         return;
     }
 
     // Wait for service
     const auto wait_timeout = std::chrono::seconds(2);
-    if (!client->wait_for_service(wait_timeout)) {
-        RCLCPP_WARN(this->get_logger(), "Service for unicycle %d not available after %lds, skipping", target_unicycle_id, wait_timeout.count());
+    if (!client->wait_for_service(wait_timeout))
+    {
+        RCLCPP_WARN(this->get_logger(),
+                    "Service for unicycle %d not available after %lds, skipping",
+                    target_unicycle_id, wait_timeout.count());
         return;
     }
 
     // Prepare request
     auto request = std::make_shared<unicycle::srv::UpdateKnowledge::Request>();
-    request->id = { static_cast<int8_t>(current_target_place_) };
-    request->temperature = { static_cast<float>(sensors_data_.temperature) };
-    request->humidity = { static_cast<float>(sensors_data_.humidity) };
-    request->air_quality = { static_cast<int32_t>(sensors_data_.air_quality) };
+    request->id = {static_cast<int8_t>(current_target_place_)};
+    request->temperature = {static_cast<float>(sensors_data_.temperature)};
+    request->humidity = {static_cast<float>(sensors_data_.humidity)};
+    request->air_quality = {static_cast<int32_t>(sensors_data_.air_quality)};
 
-    // Send asynchronously and wait for response with timeout
-    try {
-        auto future_result = client->async_send_request(request);
-
-        // Wait for response with reasonable timeout
-        const auto reply_timeout = std::chrono::seconds(3);
-        if (future_result.wait_for(reply_timeout) == std::future_status::ready) {
-            auto result = future_result.get();
-            if (result && result->success) {
-                RCLCPP_INFO(this->get_logger(), "Knowledge saved successfully on unicycle %d", target_unicycle_id);
-            } else {
-                RCLCPP_ERROR(this->get_logger(), "Knowledge save FAILED on unicycle %d (response null or success=false)", target_unicycle_id);
+    // Send asynchronously with callback
+    client->async_send_request(
+        request,
+        [this, target_unicycle_id](rclcpp::Client<unicycle::srv::UpdateKnowledge>::SharedFuture future) {
+            try
+            {
+                auto result = future.get();
+                if (result && result->success)
+                {
+                    RCLCPP_INFO(this->get_logger(),
+                                "Knowledge saved successfully on unicycle %d",
+                                target_unicycle_id);
+                }
+                else
+                {
+                    RCLCPP_ERROR(this->get_logger(),
+                                 "Knowledge save FAILED on unicycle %d (response null or success=false)",
+                                 target_unicycle_id);
+                }
             }
-        } else {
-            RCLCPP_WARN(this->get_logger(), "Timeout waiting response from unicycle %d", target_unicycle_id);
-        }
-    } catch (const std::exception &e) {
-        RCLCPP_ERROR(this->get_logger(), "Exception while sending request to unicycle %d: %s", target_unicycle_id, e.what());
-    }
+            catch (const std::exception &e)
+            {
+                RCLCPP_ERROR(this->get_logger(),
+                             "Exception while processing response from unicycle %d: %s",
+                             target_unicycle_id, e.what());
+            }
+        });
+
 }
 
 // Callback for temperature sensor
@@ -395,6 +424,14 @@ void TaskManager::humidity_sensor_callback(const std_msgs::msg::Float32::SharedP
 void TaskManager::air_quality_sensor_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
     sensors_data_.air_quality = msg->data;
+}
+
+// Callback to manage rendez-vous timeout
+void TaskManager::rendezvous_timeout_callback()
+{
+    RCLCPP_WARN(this->get_logger(), "Rendez-vous timeout reached");
+    rendezvous_failed_ = true;
+    rendezvous_timeout_timer_->cancel();
 }
 
 // Main function
