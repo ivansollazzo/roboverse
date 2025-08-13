@@ -1,0 +1,14 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ../install/unicycle/data:/var/www/html/roboverse_data:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome

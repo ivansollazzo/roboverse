@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roboverse Dashboard</title>
+    <link rel="stylesheet" href="resources/stylesheet.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nata+Sans:wght@100..900&display=swap" rel="stylesheet">
+    <script src="resources/engine.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Roboverse Dashboard</h1>
+            <div class="breadcrumb" id="breadcrumb-container">
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="sidebar">
+                <ul class="file-tree" id="file-tree">
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <div class="nojsloaded-message" id="nojsloaded">
+                    <h2>JavaScript is not enabled</h2>
+                    <p>JavaScript is needed to load Roboverse Dashboard.</p>
+                </div>
+
+                <div class="welcome-message" id="welcome" style="display: none;">
+                    <h2>Welcome to Roboverse Dashboard</h2>
+                    <p>Select a dataset from the left sidebar to view its contents.</p>
+                </div>
+
+                <div class="csv-viewer" id="csv-viewer">
+                    <div class="csv-header">
+                        <div class="csv-title" id="csv-title"></div>
+                        <div class="csv-info" id="csv-info"></div>
+                    </div>
+                    <div class="table-container">
+                        <table id="csv-table">
+                        </table>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading" style="display: none;">
+                    <p>⏳ Loading...</p>
+                </div>
+
+                <div class="error" id="error" style="display: none;">
+                    <p>❌ Error loading file</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

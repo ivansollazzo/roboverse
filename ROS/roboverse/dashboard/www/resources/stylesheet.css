@@ -1,0 +1,257 @@
+/*
+    Roboverse Dashbaord
+    Stylesheet File
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Nata Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.breadcrumb-item:hover {
+    background: rgba(103, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.content-area {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    height: calc(100vh - 200px);
+}
+
+.sidebar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.sidebar h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.file-tree {
+    list-style: none;
+}
+
+.tree-item {
+    margin-bottom: 8px;
+}
+
+.tree-folder,
+.tree-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.tree-folder:hover,
+.tree-file:hover {
+    background: rgba(103, 126, 234, 0.1);
+    transform: translateX(4px);
+}
+
+.tree-folder.active,
+.tree-file.active {
+    background: rgba(103, 126, 234, 0.2);
+    color: #667eea;
+    font-weight: 600;
+}
+
+.folder-icon,
+.file-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+}
+
+.nojsloaded-message {
+    text-align: center;
+    color: #666;
+    padding: 60px 20px;
+}
+
+.nojsloaded-message h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.welcome-message {
+    text-align: center;
+    color: #666;
+    padding: 60px 20px;
+}
+
+.welcome-message h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.csv-viewer {
+    display: none;
+}
+
+.csv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.csv-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.csv-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.table-container {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+tr:hover td {
+    background: rgba(103, 126, 234, 0.05);
+}
+
+tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+@media (max-width: 1024px) {
+    .content-area {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .sidebar {
+        max-height: 300px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
