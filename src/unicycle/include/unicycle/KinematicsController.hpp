@@ -42,7 +42,7 @@ private:
     {
         IDLE,       // The unicycle isn't doing anything
         ROTATING,   // The unicycle is rotating
-        TRANSLATING // The unicycle is translating
+        MOVING      // The unicycle is moving
     };
     
     // Variable to hold the current state of the FSM
@@ -51,8 +51,8 @@ private:
     // Defining some methods to handle the FSM states
     void handle_idle_state();
     void handle_rotating_state();
-    void handle_translating_state();
-    
+    void handle_moving_state();
+
     // Method to call the FSM
     void fsm();
     
@@ -85,9 +85,12 @@ private:
     bool just_started_ = true;
 
     // Parameters
-    const double k_omega_ = 1.0;
-    const double k_v_ = 1.0;
-    const double max_linear_speed_ = 1.0;
-    const double max_angular_speed_ = 1.0;
+    double k_theta_;
+    double k_beta_;
+    double k_rho_;
+
+    // Gains for rotation and translation
+    double max_linear_speed_;
+    double max_angular_speed_;
 };
 #endif // KINEMATICS_CONTROLLER_HPP

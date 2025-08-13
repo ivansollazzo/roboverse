@@ -17,6 +17,15 @@ KinematicsController::KinematicsController(const rclcpp::NodeOptions &options)
     // Get the unicycle's identifier. If not set, default to "unicycle_0"
     unicycle_id_ = this->declare_parameter<std::string>("unicycle_id", "unicycle_0");
 
+    // Set the max speed parameters
+    max_linear_speed_ = this->declare_parameter<double>("max_linear_speed", 1.0);
+    max_angular_speed_ = this->declare_parameter<double>("max_angular_speed", 1.0);
+
+    // Set the gains of rotation and translation
+    k_theta_ = this->declare_parameter<double>("k_theta", 1.0);
+    k_beta_ = this->declare_parameter<double>("k_beta", 1.0);
+    k_rho_ = this->declare_parameter<double>("k_rho", 1.0);
+
     // Create a QoS profile with custom settings for all nodes except current_pose
     auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
     .reliable()
@@ -84,8 +93,8 @@ void KinematicsController::fsm()
     case FSM::ROTATING:
         handle_rotating_state();
         break;
-    case FSM::TRANSLATING:
-        handle_translating_state();
+    case FSM::MOVING:
+        handle_moving_state();
         break;
     }
 }
@@ -139,7 +148,7 @@ void KinematicsController::handle_rotating_state()
     // We calculate the angle error
     double angle_error_ = calculate_angle(*target_pose_, *current_pose_);
 
-    // If the angle error is small enough, we can switch to the translating state
+    // If the angle error is small enough, we can switch to the moving state
     if (std::abs(angle_error_) < 0.1)
     {
         // Update control speeds
@@ -149,13 +158,13 @@ void KinematicsController::handle_rotating_state()
         // Publish the control speeds
         ctrl_publisher_->publish(*control_speeds_);
 
-        transition_to_state(FSM::TRANSLATING);
+        transition_to_state(FSM::MOVING);
     }
     else
     {
         // Update the control speeds according to the control law
         control_speeds_->linear.z = 0.0;
-        control_speeds_->angular.y = std::min(-k_omega_ * angle_error_, max_angular_speed_);
+        control_speeds_->angular.y = std::min(-k_theta_ * angle_error_, max_angular_speed_);
 
         // Publish the control speeds
         ctrl_publisher_->publish(*control_speeds_);
@@ -164,8 +173,8 @@ void KinematicsController::handle_rotating_state()
     }
 }
 
-// Function to handle translating state
-void KinematicsController::handle_translating_state()
+// Function to handle moving state
+void KinematicsController::handle_moving_state()
 {
     // We calculate the distance error
     double distance_error_ = calculate_distance(*target_pose_, *current_pose_);
@@ -196,13 +205,13 @@ void KinematicsController::handle_translating_state()
     else
     {
         // Update the control speeds according to the control law.
-        control_speeds_->linear.z = std::min(k_v_ * distance_error_, max_linear_speed_);
-        control_speeds_->angular.y = std::min(-k_omega_ * angle_error_, max_angular_speed_);
+        control_speeds_->linear.z = std::min(k_rho_ * distance_error_, max_linear_speed_);
+        control_speeds_->angular.y = std::min(-k_beta_ * angle_error_, max_angular_speed_);
 
         // Publish the control speeds
         ctrl_publisher_->publish(*control_speeds_);
 
-        RCLCPP_INFO(this->get_logger(), "Currently translating. Distance error: %f, Angle error: %f. Linear speed: %f. Angular speed: %f.", distance_error_, angle_error_, control_speeds_->linear.z, control_speeds_->angular.y);
+        RCLCPP_INFO(this->get_logger(), "Currently moving. Distance error: %f, Angle error: %f. Linear speed: %f. Angular speed: %f.", distance_error_, angle_error_, control_speeds_->linear.z, control_speeds_->angular.y);
     }
 
 }

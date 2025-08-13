@@ -10,7 +10,7 @@ window.onload = initializeApp;
 
 function initializeApp() {
     navigateTo('');
-    setInterval(autoRefreshDirectory, 30000); // Aggiorna ogni 30 secondi
+    setInterval(autoRefreshDirectory, 10000); // Aggiorna ogni 10 secondi
 }
 
 async function loadFileStructure(path) {

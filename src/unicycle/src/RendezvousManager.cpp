@@ -21,6 +21,11 @@ RendezvousManager::RendezvousManager(const rclcpp::NodeOptions &options)
     // Get the unicycle number
     unicycle_number_ = this->declare_parameter<int>("unicycle_number", 0);
 
+    // Set the parameters to configure the rendez-vous behaviors
+    rendezvous_error_update_factor_ = this->declare_parameter<double>("rendezvous_error_update_factor", 0.25);
+
+    rendezvous_error_threshold_ = this->declare_parameter<double>("rendezvous_error_threshold", 1.5);
+
     // Create a QoS profile with custom settings for all nodes except current_pose
     auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
                    .reliable()

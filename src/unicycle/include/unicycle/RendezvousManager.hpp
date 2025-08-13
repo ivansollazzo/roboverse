@@ -99,8 +99,8 @@ class RendezvousManager : public rclcpp::Node
         std::vector<geometry_msgs::msg::Pose::SharedPtr> desired_poses_;
 
         // Parameters to configure the rendezvous behavior
-        const double rendezvous_error_update_factor_ = 0.25;
-        const double rendezvous_error_threshold_ = 1.5;
+        double rendezvous_error_update_factor_;
+        double rendezvous_error_threshold_;
 
         // Variables to store the rendez-vous errors
         double rendezvous_error_x_ = 0.0;
