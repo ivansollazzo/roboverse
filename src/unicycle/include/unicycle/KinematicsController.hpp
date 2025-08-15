@@ -1,14 +1,15 @@
 /*
- Kinematics Controller - Header File
- This file contains the definition of the KinematicsController class,
- which is responsible for controlling the kinematics of the unicycle.
- Written by: Ivan Sollazzo
+    Kinematics Controller - Header File
+ 
+    This file contains the definition of the KinematicsController class, which is responsible for controlling the kinematics of the unicycle.
+ 
+    Written by: Ivan Sollazzo
 */
 
 #ifndef KINEMATICS_CONTROLLER_HPP
 #define KINEMATICS_CONTROLLER_HPP
 
-// Import necessary headers
+// Include necessary headers
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/pose.hpp>
@@ -48,15 +49,15 @@ private:
     // Variable to hold the current state of the FSM
     FSM current_state_ = FSM::IDLE;
     
-    // Defining some methods to handle the FSM states
+    // Defining some functions to handle the FSM states
     void handle_idle_state();
     void handle_rotating_state();
     void handle_moving_state();
 
-    // Method to call the FSM
+    // Function to call the FSM
     void fsm();
     
-    // Defining a method to handle the FSM transitions
+    // Defining a function to handle the FSM transitions
     void transition_to_state(FSM new_state);
     
     // Callback for current pose updates
@@ -75,10 +76,10 @@ private:
     // Timer to periodically call the FSM
     rclcpp::TimerBase::SharedPtr fsm_timer_;
     
-    // Method to calculate distance
+    // Function to calculate distance error
     double calculate_distance(const geometry_msgs::msg::Pose &target_pose, const geometry_msgs::msg::Pose &current_pose);
 
-    // Method to calculate angle
+    // Function to calculate angle error
     double calculate_angle(const geometry_msgs::msg::Pose &target_pose, const geometry_msgs::msg::Pose &current_pose);
 
     // Boolean to check if the unicycle just started

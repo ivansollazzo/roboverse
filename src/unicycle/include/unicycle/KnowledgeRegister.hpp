@@ -1,7 +1,7 @@
 /*
     Knowledge Register - Header File
 
-    This file contains the declaration of the KnowledgeRegister class, which is responsible for managing knowledge on the unicycle.
+    This file contains the declaration of the KnowledgeRegister class, which is responsible for managing the knowledge on the unicycle.
 
     Written by: Ivan Sollazzo
 */
@@ -9,7 +9,7 @@
 #ifndef KNOWLEDGE_REGISTER_HPP
 #define KNOWLEDGE_REGISTER_HPP
 
-// Include headers
+// Include necessary headers
 #include "rclcpp/rclcpp.hpp"
 #include "unicycle/srv/update_knowledge.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>

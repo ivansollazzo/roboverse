@@ -1,7 +1,11 @@
 /*
-    Roboverse Dashbaord
-    Stylesheet File
+    Roboverse - Dashboard Stylesheet File
+
+    This file contains the styles for the Roboverse dashboard, providing a clean and modern interface for users.
+
+    Written by: Ivan Sollazzo
 */
+
 * {
     margin: 0;
     padding: 0;
@@ -28,6 +32,13 @@ body {
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+    color: white;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .header h1 {
@@ -61,7 +72,7 @@ body {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 20px;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 250px);
 }
 
 .sidebar {

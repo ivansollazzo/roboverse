@@ -9,6 +9,7 @@
 #ifndef SENSORS_MANAGER_HPP
 #define SENSORS_MANAGER_HPP
 
+// Include necessary headers
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float32_multi_array.hpp>
 #include <std_msgs/msg/float32.hpp>

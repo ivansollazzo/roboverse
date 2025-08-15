@@ -276,6 +276,7 @@ void TaskManager::target_reached_callback(const std_msgs::msg::Bool::SharedPtr m
     target_reached_ = msg->data;
 }
 
+// Function to load places data
 void TaskManager::load_places_data()
 {
     // Initialize target places vector
@@ -287,6 +288,7 @@ void TaskManager::load_places_data()
         target_places_[i] = std::make_shared<geometry_msgs::msg::Pose>();
     }
 
+    // Instantiate rendezvous desired place
     rendezvous_desired_place_ = std::make_shared<geometry_msgs::msg::Pose>();
 
     // Load target places from parameters

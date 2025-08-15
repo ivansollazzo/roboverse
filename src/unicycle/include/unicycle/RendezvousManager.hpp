@@ -1,9 +1,7 @@
 /*
     Rendez-vous Manager - Header File
 
-    This file contains the declaration of the RendezvousManager class,
-    which is responsible for managing rendezvous points between different
-    agents in the system.
+    This file contains the declaration of the RendezvousManager class, which is responsible for managing rendez-vous point between unicycle in the system.
 
     Written by: Ivan Sollazzo
 */
@@ -11,6 +9,7 @@
 #ifndef RENDEZVOUS_MANAGER_HPP
 #define RENDEZVOUS_MANAGER_HPP
 
+// Include necessary headers
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <std_msgs/msg/bool.hpp>

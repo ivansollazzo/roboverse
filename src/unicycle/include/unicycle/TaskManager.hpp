@@ -9,6 +9,7 @@
 #ifndef TASK_MANAGER_HPP
 #define TASK_MANAGER_HPP
 
+// Include necessary headers
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -88,10 +89,10 @@ private:
     void handle_choosing_next_place_state();
     void handle_finalizing_state();
 
-    // Method to call the FSM
+    // Function to call the FSM
     void fsm();
 
-    // Defining a method to handle the FSM transitions
+    // Defining a function to handle the FSM transitions
     void transition_to_state(FSM new_state);
 
     // Callback for target reached
@@ -112,9 +113,6 @@ private:
     // Function to load places data
     void load_places_data();
 
-    // Vector of target places
-    
-
     // Timer to periodically call the FSM
     rclcpp::TimerBase::SharedPtr fsm_timer_;
 
@@ -122,7 +120,7 @@ private:
     std::vector<geometry_msgs::msg::Pose::SharedPtr> target_places_;
     geometry_msgs::msg::Pose::SharedPtr rendezvous_desired_place_;
 
-    // Variable to store current place
+    // Variable to store current target place
     int current_target_place_ = 0;
 
     // Variables to store current status

@@ -1,8 +1,7 @@
 /*
     Kinematics Controller - Source File
 
-    This file contains the implementation of the KinematicsController class,
-    which is responsible for controlling the kinematics of the unicycle.
+    This file contains the implementation of the KinematicsController class, which is responsible for controlling the kinematics of the unicycle.
 
     Written by: Ivan Sollazzo
 */
@@ -216,7 +215,7 @@ void KinematicsController::handle_moving_state()
 
 }
 
-// Method to calculate distance
+// Function to calculate distance error
 double KinematicsController::calculate_distance(const geometry_msgs::msg::Pose &target_pose, const geometry_msgs::msg::Pose &current_pose)
 {
     // Calculate the distance
@@ -226,7 +225,7 @@ double KinematicsController::calculate_distance(const geometry_msgs::msg::Pose &
     return std::hypot(dz, dx);
 }
 
-// Method to calculate angle
+// Function to calculate angle error
 double KinematicsController::calculate_angle(const geometry_msgs::msg::Pose &target_pose, const geometry_msgs::msg::Pose &current_pose)
 {
     // Get current orientation angle
