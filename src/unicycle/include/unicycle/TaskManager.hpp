@@ -112,13 +112,14 @@ private:
     // Function to load places data
     void load_places_data();
 
+    // Vector of target places
+    
+
     // Timer to periodically call the FSM
     rclcpp::TimerBase::SharedPtr fsm_timer_;
 
-    // Variables to store poses (shared pointers)
-    geometry_msgs::msg::Pose::SharedPtr target_place_0_;
-    geometry_msgs::msg::Pose::SharedPtr target_place_1_;
-    geometry_msgs::msg::Pose::SharedPtr target_place_2_;
+    // Variables to store target places
+    std::vector<geometry_msgs::msg::Pose::SharedPtr> target_places_;
     geometry_msgs::msg::Pose::SharedPtr rendezvous_desired_place_;
 
     // Variable to store current place

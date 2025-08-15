@@ -141,22 +141,10 @@ void TaskManager::handle_idle_state()
         return;
     }
 
-    // Publish the target pose based on the current target place
-    switch (current_target_place_)
-    {
-    case 0:
-        target_pose_pub_->publish(*target_place_0_);
-        break;
-    case 1:
-        target_pose_pub_->publish(*target_place_1_);
-        break;
-    case 2:
-        target_pose_pub_->publish(*target_place_2_);
-        break;
-    default:
-        RCLCPP_WARN(this->get_logger(), "Unknown target place");
-        break;
-    }
+    // Publish the target pose according to the current target place
+    target_pose_pub_->publish(*target_places_[current_target_place_]);
+
+    RCLCPP_INFO(this->get_logger(), "This unicycle will visit target place %d as first.", current_target_place_);
 
     // Transition to the GOING_TO_TARGET state
     transition_to_state(FSM::GOING_TO_TARGET);
@@ -203,7 +191,7 @@ void TaskManager::handle_waiting_for_rv_state()
     bool rendezvous_complete_ = true;
 
     // If there's a single unicycle that didn't complete rendez-vous
-    for (int i = 0; i < all_rendezvous_complete_.size(); ++i)
+    for (int i = 0; i < num_unicycles_; ++i)
     {
         if (!all_rendezvous_complete_[i])
         {
@@ -274,21 +262,9 @@ void TaskManager::handle_finalizing_state()
     std::fill(all_rendezvous_complete_.begin(), all_rendezvous_complete_.end(), false);
 
     // Publish the target pose based on the current target place
-    switch (current_target_place_)
-    {
-    case 0:
-        target_pose_pub_->publish(*target_place_0_);
-        break;
-    case 1:
-        target_pose_pub_->publish(*target_place_1_);
-        break;
-    case 2:
-        target_pose_pub_->publish(*target_place_2_);
-        break;
-    default:
-        RCLCPP_WARN(this->get_logger(), "Unknown target place");
-        break;
-    }
+    target_pose_pub_->publish(*target_places_[current_target_place_]);
+
+    RCLCPP_INFO(this->get_logger(), "Next target place for this unicycle is: %d", current_target_place_);
 
     // Transition to the GOING_TO_TARGET state
     transition_to_state(FSM::GOING_TO_TARGET);
@@ -302,35 +278,37 @@ void TaskManager::target_reached_callback(const std_msgs::msg::Bool::SharedPtr m
 
 void TaskManager::load_places_data()
 {
+    // Initialize target places vector
+    target_places_.resize(num_places_);
 
-    // Instantiate places objects
-    target_place_0_ = std::make_shared<geometry_msgs::msg::Pose>();
-    target_place_1_ = std::make_shared<geometry_msgs::msg::Pose>();
-    target_place_2_ = std::make_shared<geometry_msgs::msg::Pose>();
+    // Instantiate places objects according to num places
+    for (int i = 0; i < num_places_; ++i)
+    {
+        target_places_[i] = std::make_shared<geometry_msgs::msg::Pose>();
+    }
+
     rendezvous_desired_place_ = std::make_shared<geometry_msgs::msg::Pose>();
 
-    // Load from parameters
-    target_place_0_->position.x = this->declare_parameter("target_place_0_x", 0.0);
-    target_place_0_->position.z = this->declare_parameter("target_place_0_z", 0.0);
+    // Load target places from parameters
+    for (int i = 0; i < num_places_; ++i)
+    {
+        target_places_[i]->position.x = this->declare_parameter("target_place_" + std::to_string(i) + "_x", 0.0);
+        target_places_[i]->position.z = this->declare_parameter("target_place_" + std::to_string(i) + "_z", 0.0);
+    }
 
-    target_place_1_->position.x = this->declare_parameter("target_place_1_x", 0.0);
-    target_place_1_->position.z = this->declare_parameter("target_place_1_z", 0.0);
-
-    target_place_2_->position.x = this->declare_parameter("target_place_2_x", 0.0);
-    target_place_2_->position.z = this->declare_parameter("target_place_2_z", 0.0);
-
+    // Load rendez-vous desired place
     rendezvous_desired_place_->position.x = this->declare_parameter("rv_desired_place_x", 0.0);
     rendezvous_desired_place_->position.z = this->declare_parameter("rv_desired_place_z", 0.0);
 
     // Print loaded places data
-    RCLCPP_INFO(this->get_logger(), "Target place 0: [%.2f, %.2f]",
-                target_place_0_->position.z, target_place_0_->position.x);
-    RCLCPP_INFO(this->get_logger(), "Target place 1: [%.2f, %.2f]",
-                target_place_1_->position.z, target_place_1_->position.x);
-    RCLCPP_INFO(this->get_logger(), "Target place 2: [%.2f, %.2f]",
-                target_place_2_->position.z, target_place_2_->position.x);
+    for (int i = 0; i < num_places_; ++i)
+    {
+        RCLCPP_INFO(this->get_logger(), "Target place %d has been loaded: [%.2f, %.2f]",
+                    i, target_places_[i]->position.z, target_places_[i]->position.x);
+    }
+
     RCLCPP_INFO(this->get_logger(), "Rendez-vous desired place: [%.2f, %.2f]",
-                rendezvous_desired_place_->position.x, rendezvous_desired_place_->position.x);
+                rendezvous_desired_place_->position.z, rendezvous_desired_place_->position.x);
 }
 
 // Callback for rendezvous status according to the unicycle number
