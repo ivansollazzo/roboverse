@@ -151,6 +151,9 @@ private:
     // Data collection object
     SensorsData sensors_data_;
 
+    // Persistent sensors data for knowledge share
+    SensorsData persistent_sensors_data_;
+
     // Variables to manage service requests
     bool service_request_sent_ = false;
     std::shared_future<std::shared_ptr<unicycle::srv::UpdateKnowledge::Response>> service_future_;
