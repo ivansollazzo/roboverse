@@ -163,6 +163,11 @@ void TaskManager::handle_going_to_target_state()
 
 void TaskManager::handle_collecting_data_state()
 {
+    // Update persistent sensors data
+    persistent_sensors_data_.temperature = sensors_data_.temperature;
+    persistent_sensors_data_.humidity = sensors_data_.humidity;
+    persistent_sensors_data_.airquality = sensors_data.airquality;
+    
     // Make knowledge update request
     make_knowledge_update_request(unicycle_number_);
 
@@ -354,9 +359,9 @@ void TaskManager::make_knowledge_update_request(const int target_unicycle_id)
     // Prepare request
     auto request = std::make_shared<unicycle::srv::UpdateKnowledge::Request>();
     request->id = {static_cast<int8_t>(current_target_place_)};
-    request->temperature = {static_cast<float>(sensors_data_.temperature)};
-    request->humidity = {static_cast<float>(sensors_data_.humidity)};
-    request->air_quality = {static_cast<int32_t>(sensors_data_.air_quality)};
+    request->temperature = {static_cast<float>(persistent_sensors_data_.temperature)};
+    request->humidity = {static_cast<float>(persistent_sensors_data_.humidity)};
+    request->air_quality = {static_cast<int32_t>(persistent_sensors_data_.air_quality)};
 
     // Send asynchronously with callback
     client->async_send_request(
