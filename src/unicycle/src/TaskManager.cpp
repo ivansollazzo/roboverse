@@ -166,7 +166,7 @@ void TaskManager::handle_collecting_data_state()
     // Update persistent sensors data
     persistent_sensors_data_.temperature = sensors_data_.temperature;
     persistent_sensors_data_.humidity = sensors_data_.humidity;
-    persistent_sensors_data_.airquality = sensors_data.airquality;
+    persistent_sensors_data_.air_quality = sensors_data.air_quality;
     
     // Make knowledge update request
     make_knowledge_update_request(unicycle_number_);
